@@ -276,6 +276,18 @@
           <div id="update-logs"></div>
         </div>
         <div class="setting-item">
+          <span>Unblocker Detection</span>
+          <div id="unblocker-status" style="font-size:0.98em;color:#888;"></div>
+        </div>
+        <div class="setting-item">
+          <span>Time & Date</span>
+          <div id="datetime" style="font-size:1em;"></div>
+        </div>
+        <div class="setting-item">
+          <span>Battery Level</span>
+          <div id="battery-level" style="font-size:1em;"></div>
+        </div>
+        <div class="setting-item">
           <span>About/Help</span>
           <span class="about-text">
             This unblocker uses iframes (embeds) to view sites.<br>
@@ -332,8 +344,7 @@
       { version: "v1.0", date: "2024-06-25", changes: "Initial release: apps, games, unblocker, settings." },
       { version: "v1.1", date: "2024-07-03", changes: "Added About:blank mode, theme switcher, disguise mode, homepage selector." },
       { version: "v1.2", date: "2024-08-13", changes: "Custom favicon, custom page title, panic button, notes toggle, fullscreen mode." },
-      { version: "v1.3", date: "2025-10-03", changes: "Update logs feature added." }
-      // Add future updates here!
+      { version: "v1.3", date: "2025-10-03", changes: "Update logs, unblocker detection, time & date, battery level added." }
     ];
 
     let lastUrl = "";
@@ -395,7 +406,6 @@
     document.getElementById('toggle-theme').onclick = () => {
       setTheme(!getTheme());
     };
-    // Initial theme
     setTheme(getTheme());
 
     // About:blank mode
@@ -446,7 +456,6 @@
         localStorage.setItem('unblocker-title', newTitle);
       }
     };
-    // Restore title from localStorage
     const storedTitle = localStorage.getItem('unblocker-title');
     if (storedTitle) {
       document.title = storedTitle;
@@ -557,6 +566,60 @@
       ).join('<hr>');
     }
     renderUpdateLogs();
+
+    // Unblocker Detection
+    function detectUnblocker() {
+      let msg = "";
+      if (window.self !== window.top) {
+        msg += "Running inside an iframe.<br>";
+      } else {
+        msg += "Not inside an iframe.<br>";
+      }
+      // Try to detect if sites block embedding (not perfect)
+      try {
+        let testIframe = document.createElement('iframe');
+        testIframe.src = "https://www.youtube.com";
+        testIframe.style.display = "none";
+        document.body.appendChild(testIframe);
+        setTimeout(() => {
+          if (!testIframe.contentWindow || testIframe.contentWindow.location.href === "about:blank") {
+            msg += "Embedding may be blocked by CSP or X-Frame-Options.<br>";
+          } else {
+            msg += "Embedding appears possible.<br>";
+          }
+          testIframe.remove();
+          document.getElementById('unblocker-status').innerHTML = msg;
+        }, 1200);
+      } catch (e) {
+        msg += "Unable to check embed status.<br>";
+        document.getElementById('unblocker-status').innerHTML = msg;
+      }
+    }
+    detectUnblocker();
+
+    // Time & Date
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById('datetime').textContent = now.toLocaleString();
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // Battery Level
+    function updateBatteryLevel(battery) {
+      let percent = Math.round(battery.level * 100);
+      let charging = battery.charging ? "⚡ Charging" : "On battery";
+      document.getElementById('battery-level').textContent = `${percent}% (${charging})`;
+    }
+    if ('getBattery' in navigator) {
+      navigator.getBattery().then(battery => {
+        updateBatteryLevel(battery);
+        battery.addEventListener('levelchange', () => updateBatteryLevel(battery));
+        battery.addEventListener('chargingchange', () => updateBatteryLevel(battery));
+      });
+    } else {
+      document.getElementById('battery-level').textContent = 'Battery API not supported';
+    }
 
     // Render sections
     renderApps();
