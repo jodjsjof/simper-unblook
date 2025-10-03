@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title id="dynamic-title">Bed</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link id="dynamic-favicon" rel="icon" href="https://www.google.com/favicon.ico">
+  <style>
+    body {
+      background: #f4f6fb;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      transition: background 0.3s, color 0.3s;
+    }
+    .container {
+      max-width: 740px;
+      margin: 2em auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 2em 2em 2em 2em;
+      transition: background 0.3s, color 0.3s;
+    }
+    h2 {
+      margin-top: 0;
+      text-align: center;
+      color: #3A3A3A;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    section { margin-bottom: 2em; }
+    .section-title {
+      font-size: 1.15em;
+      color: #7091f5;
+      margin-bottom: 0.7em;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .apps-list, .games-list {
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      margin-bottom: 0.5em;
+    }
+    .app-card, .game-card {
+      background: #f9fafb;
+      border: 1.5px solid #e3eaff;
+      border-radius: 9px;
+      padding: 0.8em 1.2em;
+      min-width: 120px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(112,145,245,0.07);
+      transition: box-shadow .2s, border-color .2s;
+      font-weight: 500;
+      color: #3A3A3A;
+    }
+    .app-card:hover, .game-card:hover {
+      border-color: #7091f5;
+      box-shadow: 0 4px 16px rgba(112,145,245,0.12);
+      background: #e3eaff;
+      color: #2a2a2a;
+    }
+    .app-icon { font-size: 1.5em; display: block; margin-bottom: 0.2em; }
+    #url-form {
+      display: flex;
+      gap: 0.5em;
+      margin-bottom: 1.5em;
+      justify-content: center;
+    }
+    input[type="text"], select {
+      flex: 1;
+      padding: 0.7em;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1em;
+      background: #f9fafb;
+      transition: box-shadow .2s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      margin-bottom: 0.5em;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: #7091f5;
+      box-shadow: 0 0 0 2px #e3eaff;
+      outline: none;
+    }
+    button, .settings-btn {
+      padding: 0.7em 1.4em;
+      border: none;
+      border-radius: 8px;
+      background: #7091f5;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background .2s;
+      margin-top: 0.5em;
+    }
+    button:hover, .settings-btn:hover {
+      background: #4e6dd3;
+    }
+    .settings-btn-small { font-size:0.95em; padding:0.4em 1em; margin-top:0; }
+    #embed-container {
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(112,145,245,0.08);
+      background: #e3eaff;
+      padding: 0;
+      margin-bottom: 1em;
+      margin-top: 1em;
+      min-height: 60px;
+    }
+    #embed-frame {
+      width: 100%;
+      height: 60vh;
+      border: none;
+      display: block;
+      background: #fff;
+    }
+    .note {
+      font-size: 0.97em;
+      color: #555;
+      text-align: center;
+      margin: 1em 0 0 0;
+    }
+    .settings-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      align-items: center;
+      margin-bottom: 1em;
+    }
+    .setting-item {
+      background: #f9fafb;
+      border: 1.5px solid #e3eaff;
+      border-radius: 9px;
+      padding: 1em;
+      min-width: 130px;
+      text-align: left;
+      box-shadow: 0 1px 4px rgba(112,145,245,0.06);
+      font-size: 1em;
+      color: #444;
+      margin-bottom: 0.5em;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+    }
+    .theme-switch { display: flex; align-items: center; gap: 0.5em; }
+    .theme-label { font-weight: 600; }
+    .about-text { font-size: 0.98em; color: #555; margin-top: 0.5em; }
+    .favicon-select { font-size:1em; margin-top:0.3em; }
+    #custom-favicon-upload { margin-top:0.3em; }
+    .disguise-select { margin-top:0.3em; }
+    .homepage-select { margin-top:0.3em; }
+    /* Dark Theme */
+    body.dark, .container.dark {
+      background: #23272f !important;
+      color: #e3eaff !important;
+    }
+    body.dark .container {
+      background: #262a34 !important;
+      color: #e3eaff !important;
+    }
+    body.dark .section-title,
+    body.dark .app-card,
+    body.dark .game-card,
+    body.dark .setting-item {
+      color: #e3eaff !important;
+      background: #23272f !important;
+      border-color: #7091f5 !important;
+    }
+    body.dark input[type="text"], body.dark select {
+      background: #23272f !important;
+      color: #e3eaff !important;
+      border-color: #7091f5 !important;
+    }
+    body.dark #embed-container { background: #23272f !important; }
+    body.dark .note, body.dark .about-text { color: #b9c4e2 !important; }
+    .hidden { display: none !important; }
+    @media (max-width: 700px) {
+      .container { padding: 1em; }
+      #embed-frame { height: 40vh; }
+      .apps-list, .games-list, .settings-list { gap: 0.5em; }
+    }
+    /* Disguise Styles */
+    body.disguise-google { background:#fff !important; }
+    .container.disguise-google { background:#fff !important; border-radius:0; box-shadow:none; }
+    body.disguise-wikipedia { background:#f8f9fa !important; }
+    .container.disguise-wikipedia { background:#fff !important; border-radius:0; box-shadow:none; }
+    body.disguise-generic { background:#ffffff !important; }
+    .container.disguise-generic { background:#fff !important; border-radius:0; box-shadow:none; }
+  </style>
+</head>
+<body>
+  <div class="container" id="main-container">
+    <h2 id="site-title">Unblo(c)ker (Embed Version)</h2>
+    <section>
+      <div class="section-title">Settings</div>
+      <div class="settings-list">
+        <div class="setting-item">
+          <span class="theme-label">Theme:</span>
+          <div class="theme-switch">
+            <button class="settings-btn" id="toggle-theme">🌞/🌚 Toggle</button>
+          </div>
+        </div>
+        <div class="setting-item">
+          <span>About:blank Mode</span>
+          <button class="settings-btn" id="blank-btn">Open Last URL in About:blank</button>
+          <span style="font-size:0.9em;color:#888;">For sites that block embedding</span>
+        </div>
+        <div class="setting-item">
+          <span>Reset Embed</span>
+          <button class="settings-btn" id="reset-embed">Reset</button>
+        </div>
+        <div class="setting-item">
+          <span>Custom Page Title</span>
+          <input type="text" id="title-input" placeholder="Enter custom title">
+          <button class="settings-btn-small" id="title-set-btn">Set Title</button>
+        </div>
+        <div class="setting-item">
+          <span>Favicon</span>
+          <select id="favicon-select" class="favicon-select">
+            <option value="https://www.google.com/favicon.ico">Google</option>
+            <option value="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png">Wikipedia</option>
+            <option value="https://www.youtube.com/favicon.ico">YouTube</option>
+            <option value="https://chat.openai.com/favicon.ico">ChatGPT</option>
+            <option value="https://reddit.com/favicon.ico">Reddit</option>
+            <option value="https://www.coolmathgames.com/favicon.ico">CoolMathGames</option>
+            <option value="https://www.geogebra.org/favicon.ico">GeoGebra</option>
+            <option value="custom">Custom Upload</option>
+          </select>
+          <input type="file" accept="image/*" id="custom-favicon-upload" class="hidden">
+        </div>
+        <div class="setting-item">
+          <span>Disguise as:</span>
+          <select id="disguise-select" class="disguise-select">
+            <option value="">None</option>
+            <option value="google">Google</option>
+            <option value="wikipedia">Wikipedia</option>
+            <option value="generic">Generic Site</option>
+          </select>
+          <button class="settings-btn-small" id="panic-btn" style="background:#e74c3c;">Panic/Quick Disguise</button>
+        </div>
+        <div class="setting-item">
+          <span>Homepage Section</span>
+          <select id="homepage-select" class="homepage-select">
+            <option value="apps">Apps</option>
+            <option value="games">Games</option>
+            <option value="unblocker">Unblocker</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <span>Notes/Help</span>
+          <button class="settings-btn-small" id="notes-toggle-btn">Toggle Notes</button>
+        </div>
+        <div class="setting-item">
+          <span>About/Help</span>
+          <span class="about-text">
+            This unblocker uses iframes (embeds) to view sites.<br>
+            Use About:blank mode if a site doesn't load.<br>
+            You can switch to dark/light theme, choose homepage, disguise the site, and set favicon/title.<br>
+            Your IP is not hidden, and some sites can't be embedded.
+          </span>
+        </div>
+      </div>
+    </section>
+    <section id="apps-section">
+      <div class="section-title">Apps</div>
+      <div class="apps-list" id="apps-list"></div>
+    </section>
+    <section id="games-section">
+      <div class="section-title">Games</div>
+      <div class="games-list" id="games-list"></div>
+    </section>
+    <section id="unblocker-section">
+      <div class="section-title">Unblock a Website</div>
+      <form id="url-form">
+        <input type="text" id="url-input" placeholder="Enter Website URL (e.g. https://example.com)" required>
+        <button type="submit">Unblock!</button>
+      </form>
+      <div id="embed-container"></div>
+      <div class="note" id="note-block">
+        Sites that block embedding will not load.<br>
+        This does not hide your IP address or bypass strong network filters.
+      </div>
+    </section>
+  </div>
+  <script>
+    // Apps: name, url, icon (emoji for demo)
+    const apps = [
+      { name: "YouTube", url: "https://www.youtube.com", icon: "▶️" },
+      { name: "ChatGPT", url: "https://chat.openai.com", icon: "💬" },
+      { name: "Google", url: "https://www.google.com", icon: "🌐" },
+      { name: "Wikipedia", url: "https://wikipedia.org", icon: "📚" },
+      { name: "Reddit", url: "https://reddit.com", icon: "👽" },
+      { name: "CoolMathGames", url: "https://www.coolmathgames.com/", icon: "🧮" },
+      { name: "GeoGebra", url: "https://www.geogebra.org/", icon: "🧑‍🏫" }
+    ];
+
+    // Games: placeholders for now
+    const games = [
+      { name: "Game 1", icon: "🎮" },
+      { name: "Game 2", icon: "🕹️" },
+      { name: "Game 3", icon: "🔲" },
+      { name: "Game 4", icon: "🧩" }
+    ];
+
+    let lastUrl = "";
+
+    function renderApps() {
+      const appsList = document.getElementById('apps-list');
+      appsList.innerHTML = "";
+      apps.forEach(app => {
+        const a = document.createElement('div');
+        a.className = 'app-card';
+        a.innerHTML = `<span class="app-icon">${app.icon}</span>${app.name}`;
+        a.onclick = () => {
+          showEmbed(app.url);
+          lastUrl = app.url;
+          showSection('unblocker');
+        };
+        appsList.appendChild(a);
+      });
+    }
+
+    function renderGames() {
+      const gamesList = document.getElementById('games-list');
+      gamesList.innerHTML = "";
+      games.forEach(game => {
+        const g = document.createElement('div');
+        g.className = 'game-card';
+        g.innerHTML = `<span class="app-icon">${game.icon}</span>${game.name}<br><small>Coming Soon</small>`;
+        gamesList.appendChild(g);
+      });
+    }
+
+    function showEmbed(url) {
+      document.getElementById('embed-container').innerHTML =
+        `<iframe id="embed-frame" src="${url}" allowfullscreen></iframe>`;
+      lastUrl = url;
+    }
+
+    document.getElementById('url-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const url = document.getElementById('url-input').value.trim();
+      if (!/^https?:\/\//.test(url)) {
+        alert('URL must start with http:// or https://');
+        return;
+      }
+      showEmbed(url);
+      lastUrl = url;
+    });
+
+    // Theme switcher
+    function setTheme(dark) {
+      document.body.classList.toggle('dark', dark);
+      document.getElementById('main-container').classList.toggle('dark', dark);
+      localStorage.setItem('unblocker-dark', dark ? "1" : "0");
+    }
+    function getTheme() {
+      return localStorage.getItem('unblocker-dark') === "1";
+    }
+    document.getElementById('toggle-theme').onclick = () => {
+      setTheme(!getTheme());
+    };
+    // Initial theme
+    setTheme(getTheme());
+
+    // About:blank mode
+    document.getElementById('blank-btn').onclick = () => {
+      if (!lastUrl) {
+        alert("No website loaded yet!");
+        return;
+      }
+      // Open in about:blank
+      const win = window.open('about:blank', '_blank');
+      if (win) {
+        win.document.write(`<iframe src="${lastUrl}" style="border:none;width:100vw;height:100vh;"></iframe>`);
+      } else {
+        alert("Popup blocked! Allow popups for this site.");
+      }
+    };
+
+    // Reset embed
+    document.getElementById('reset-embed').onclick = () => {
+      document.getElementById('embed-container').innerHTML = "";
+      lastUrl = "";
+    };
+
+    // Custom title
+    document.getElementById('title-set-btn').onclick = () => {
+      const newTitle = document.getElementById('title-input').value.trim();
+      if (newTitle) {
+        document.title = newTitle;
+        document.getElementById('site-title').textContent = newTitle;
+        localStorage.setItem('unblocker-title', newTitle);
+      }
+    };
+    // Restore title from localStorage
+    const storedTitle = localStorage.getItem('unblocker-title');
+    if (storedTitle) {
+      document.title = storedTitle;
+      document.getElementById('site-title').textContent = storedTitle;
+    }
+
+    // Favicon selector
+    const faviconSelect = document.getElementById('favicon-select');
+    const faviconLink = document.getElementById('dynamic-favicon');
+    faviconSelect.onchange = function() {
+      if (this.value === 'custom') {
+        document.getElementById('custom-favicon-upload').classList.remove('hidden');
+      } else {
+        faviconLink.href = this.value;
+        document.getElementById('custom-favicon-upload').classList.add('hidden');
+        localStorage.setItem('unblocker-favicon', this.value);
+      }
+    };
+    // Custom favicon upload
+    document.getElementById('custom-favicon-upload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        faviconLink.href = ev.target.result;
+        localStorage.setItem('unblocker-favicon', ev.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+    // Restore favicon from localStorage
+    const storedFavicon = localStorage.getItem('unblocker-favicon');
+    if (storedFavicon) faviconLink.href = storedFavicon;
+
+    // Disguise mode
+    const disguiseSelect = document.getElementById('disguise-select');
+    const mainContainer = document.getElementById('main-container');
+    disguiseSelect.onchange = function() {
+      setDisguise(this.value);
+    };
+    function setDisguise(mode) {
+      document.body.classList.remove('disguise-google', 'disguise-wikipedia', 'disguise-generic');
+      mainContainer.classList.remove('disguise-google', 'disguise-wikipedia', 'disguise-generic');
+      if (mode === 'google') {
+        document.body.classList.add('disguise-google');
+        mainContainer.classList.add('disguise-google');
+        document.title = "Google";
+        document.getElementById('site-title').textContent = "Google";
+        faviconLink.href = "https://www.google.com/favicon.ico";
+      } else if (mode === 'wikipedia') {
+        document.body.classList.add('disguise-wikipedia');
+        mainContainer.classList.add('disguise-wikipedia');
+        document.title = "Wikipedia";
+        document.getElementById('site-title').textContent = "Wikipedia";
+        faviconLink.href = "https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png";
+      } else if (mode === 'generic') {
+        document.body.classList.add('disguise-generic');
+        mainContainer.classList.add('disguise-generic');
+        document.title = "Welcome";
+        document.getElementById('site-title').textContent = "Welcome";
+        faviconLink.href = "https://www.google.com/favicon.ico";
+      } else {
+        // Restore from localStorage
+        if (storedTitle) {
+          document.title = storedTitle;
+          document.getElementById('site-title').textContent = storedTitle;
+        } else {
+          document.title = "Unblo(c)ker via Embed";
+          document.getElementById('site-title').textContent = "Unblo(c)ker (Embed Version)";
+        }
+        if (storedFavicon) faviconLink.href = storedFavicon;
+      }
+    }
+    // Panic button: instantly disguise as Google and clear embed
+    document.getElementById('panic-btn').onclick = () => {
+      setDisguise('google');
+      document.getElementById('embed-container').innerHTML = "";
+      lastUrl = "";
+      showSection('apps');
+    };
+
+    // Homepage section selector
+    function showSection(section) {
+      document.getElementById('apps-section').classList.add('hidden');
+      document.getElementById('games-section').classList.add('hidden');
+      document.getElementById('unblocker-section').classList.add('hidden');
+      if (section === 'apps') document.getElementById('apps-section').classList.remove('hidden');
+      if (section === 'games') document.getElementById('games-section').classList.remove('hidden');
+      if (section === 'unblocker') document.getElementById('unblocker-section').classList.remove('hidden');
+      localStorage.setItem('unblocker-homepage', section);
+    }
+    document.getElementById('homepage-select').onchange = function() {
+      showSection(this.value);
+    };
+    // Initial homepage section
+    const homepageSection = localStorage.getItem('unblocker-homepage') || 'apps';
+    document.getElementById('homepage-select').value = homepageSection;
+    showSection(homepageSection);
+
+    // Notes/help toggle
+    document.getElementById('notes-toggle-btn').onclick = function() {
+      document.getElementById('note-block').classList.toggle('hidden');
+      localStorage.setItem('unblocker-notes', document.getElementById('note-block').classList.contains('hidden') ? "0" : "1");
+    };
+    // Restore notes/help visibility
+    const notesVisible = localStorage.getItem('unblocker-notes');
+    if (notesVisible === "0") document.getElementById('note-block').classList.add('hidden');
+
+    // Render sections
+    renderApps();
+    renderGames();
+  </script>
+</body>
+</html>
