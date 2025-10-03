@@ -191,6 +191,17 @@
     .container.disguise-wikipedia { background:#fff !important; border-radius:0; box-shadow:none; }
     body.disguise-generic { background:#ffffff !important; }
     .container.disguise-generic { background:#fff !important; border-radius:0; box-shadow:none; }
+    /* Update logs styling */
+    #update-logs {
+      font-size:0.95em; 
+      max-height:140px; 
+      overflow:auto;
+    }
+    #update-logs hr {
+      border:0;
+      border-top:1px solid #eee;
+      margin: 4px 0;
+    }
   </style>
 </head>
 <body>
@@ -213,6 +224,11 @@
         <div class="setting-item">
           <span>Reset Embed</span>
           <button class="settings-btn" id="reset-embed">Reset</button>
+        </div>
+        <div class="setting-item">
+          <span>Fullscreen Embed</span>
+          <button class="settings-btn-small" id="fullscreen-btn">Go Fullscreen</button>
+          <span style="font-size:0.9em;color:#888;">Toggle embed iframe fullscreen</span>
         </div>
         <div class="setting-item">
           <span>Custom Page Title</span>
@@ -254,6 +270,10 @@
         <div class="setting-item">
           <span>Notes/Help</span>
           <button class="settings-btn-small" id="notes-toggle-btn">Toggle Notes</button>
+        </div>
+        <div class="setting-item">
+          <span>Update Logs</span>
+          <div id="update-logs"></div>
         </div>
         <div class="setting-item">
           <span>About/Help</span>
@@ -307,6 +327,15 @@
       { name: "Game 4", icon: "🧩" }
     ];
 
+    // Update logs array
+    const updateLogs = [
+      { version: "v1.0", date: "2024-06-25", changes: "Initial release: apps, games, unblocker, settings." },
+      { version: "v1.1", date: "2024-07-03", changes: "Added About:blank mode, theme switcher, disguise mode, homepage selector." },
+      { version: "v1.2", date: "2024-08-13", changes: "Custom favicon, custom page title, panic button, notes toggle, fullscreen mode." },
+      { version: "v1.3", date: "2025-10-03", changes: "Update logs feature added." }
+      // Add future updates here!
+    ];
+
     let lastUrl = "";
 
     function renderApps() {
@@ -340,6 +369,7 @@
       document.getElementById('embed-container').innerHTML =
         `<iframe id="embed-frame" src="${url}" allowfullscreen></iframe>`;
       lastUrl = url;
+      updateFullscreenBtn();
     }
 
     document.getElementById('url-form').addEventListener('submit', function(e) {
@@ -374,7 +404,6 @@
         alert("No website loaded yet!");
         return;
       }
-      // Open in about:blank
       const win = window.open('about:blank', '_blank');
       if (win) {
         win.document.write(`<iframe src="${lastUrl}" style="border:none;width:100vw;height:100vh;"></iframe>`);
@@ -387,7 +416,26 @@
     document.getElementById('reset-embed').onclick = () => {
       document.getElementById('embed-container').innerHTML = "";
       lastUrl = "";
+      updateFullscreenBtn();
     };
+
+    // Fullscreen Embed
+    document.getElementById('fullscreen-btn').onclick = () => {
+      const iframe = document.getElementById('embed-frame');
+      if (!iframe) {
+        alert("No embed loaded!");
+        return;
+      }
+      if (!document.fullscreenElement) {
+        iframe.requestFullscreen().catch(() => alert("Fullscreen not supported."));
+      } else {
+        document.exitFullscreen();
+      }
+    };
+    function updateFullscreenBtn() {
+      const btn = document.getElementById('fullscreen-btn');
+      btn.disabled = !document.getElementById('embed-frame');
+    }
 
     // Custom title
     document.getElementById('title-set-btn').onclick = () => {
@@ -417,7 +465,6 @@
         localStorage.setItem('unblocker-favicon', this.value);
       }
     };
-    // Custom favicon upload
     document.getElementById('custom-favicon-upload').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -428,7 +475,6 @@
       };
       reader.readAsDataURL(file);
     });
-    // Restore favicon from localStorage
     const storedFavicon = localStorage.getItem('unblocker-favicon');
     if (storedFavicon) faviconLink.href = storedFavicon;
 
@@ -460,7 +506,6 @@
         document.getElementById('site-title').textContent = "Welcome";
         faviconLink.href = "https://www.google.com/favicon.ico";
       } else {
-        // Restore from localStorage
         if (storedTitle) {
           document.title = storedTitle;
           document.getElementById('site-title').textContent = storedTitle;
@@ -471,12 +516,12 @@
         if (storedFavicon) faviconLink.href = storedFavicon;
       }
     }
-    // Panic button: instantly disguise as Google and clear embed
     document.getElementById('panic-btn').onclick = () => {
       setDisguise('google');
       document.getElementById('embed-container').innerHTML = "";
       lastUrl = "";
       showSection('apps');
+      updateFullscreenBtn();
     };
 
     // Homepage section selector
@@ -492,7 +537,6 @@
     document.getElementById('homepage-select').onchange = function() {
       showSection(this.value);
     };
-    // Initial homepage section
     const homepageSection = localStorage.getItem('unblocker-homepage') || 'apps';
     document.getElementById('homepage-select').value = homepageSection;
     showSection(homepageSection);
@@ -502,13 +546,22 @@
       document.getElementById('note-block').classList.toggle('hidden');
       localStorage.setItem('unblocker-notes', document.getElementById('note-block').classList.contains('hidden') ? "0" : "1");
     };
-    // Restore notes/help visibility
     const notesVisible = localStorage.getItem('unblocker-notes');
     if (notesVisible === "0") document.getElementById('note-block').classList.add('hidden');
+
+    // Update Logs
+    function renderUpdateLogs() {
+      const logsDiv = document.getElementById('update-logs');
+      logsDiv.innerHTML = updateLogs.map(log =>
+        `<b>${log.version}</b> <span style="color:#888;">(${log.date})</span><br>${log.changes}<br>`
+      ).join('<hr>');
+    }
+    renderUpdateLogs();
 
     // Render sections
     renderApps();
     renderGames();
+    updateFullscreenBtn();
   </script>
 </body>
 </html>
